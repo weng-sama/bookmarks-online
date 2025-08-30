@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-Hant">
+\1
+
+<!-- Firebase modular config inserted by assistant -->
+<script>
+  window.__FIREBASE_CONFIG = {
+    apiKey: "AIzaSyD6ZoX7Q1BamYiXNHILnQdZJR-k-srUufs",
+    authDomain: "bookmarks-ccceb.firebaseapp.com",
+    projectId: "bookmarks-ccceb",
+    storageBucket: "bookmarks-ccceb.firebasestorage.app",
+    messagingSenderId: "224709583488",
+    appId: "1:224709583488:web:a96bb9a1836ce4537c7c65",
+    measurementId: "G-85B051LG8H"
+  };
+</script>
+<!-- End firebase config -->
+<script type="module" src="js/db-firebase-modular.js"></script>
+
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>書籤系統 v27e</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <nav class="nav" id="top-nav">
+    <button class="nav-btn" data-page="favorites">已收藏</button>
+    <button class="nav-btn" data-page="add">新增</button>
+    <button class="nav-btn" data-page="search">搜尋</button>
+    <button class="nav-btn" data-page="manage">管理</button>
+    <button class="nav-btn" data-page="history">記錄</button>
+  </nav>
+  <div style="position:absolute;right:12px;top:10px;font-size:13px;color:#6b7280">v27</div>
+</header>
+<main id="app">
+  <section id="page-favorites" class="page">
+    <div class="card">
+      <h2 class="card-title">已收藏 <span id="fav-count" class="meta-text"></span></h2>
+      <div id="fav-list" class="item-list"></div>
+      <div class="pagi">
+        <div class="pagi-left"><button id="fav-prev" class="btn">上一頁</button><button id="fav-next" class="btn">下一頁</button></div>
+        <div class="pagi-center"><span id="fav-pages" class="pagi-pages"></span></div>
+        <div class="pagi-right">每頁 <select id="fav-size" class="input-compact"><option>10</option><option selected>20</option><option>50</option><option>100</option></select> 筆；到第 <input id="fav-jump" class="input-compact num" type="number" min="1" /> 頁 <button id="fav-jump-go" class="btn small">前往</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-add" class="page">
+    <div class="card">
+      <h2 class="card-title">新增收藏</h2>
+      <div class="form-row"><label>名稱</label><input id="add-name" type="text" placeholder="名稱" /></div>
+      <div class="form-row"><label>網址</label><input id="add-url" type="url" placeholder="https://example.com" /></div>
+      <div class="picker-grid">
+        <div class="picker card-sub">
+          <div class="picker-head"><div class="picker-title">所有標籤</div><div class="picker-actions"><input id="add-tag-search" class="input-compact" placeholder="搜尋標籤" /></div></div>
+          <div id="add-tag-list" class="chip-list"></div>
+          <div class="picker-new"><input id="add-tag-new" class="input-compact" placeholder="新增" /><button id="btn-add-tag" class="btn small">新增</button></div>
+        </div>
+        <div class="picker card-sub">
+          <div class="picker-head"><div class="picker-title">所有合輯</div><div class="picker-actions"><input id="add-col-search" class="input-compact" placeholder="搜尋合輯" /></div></div>
+          <div id="add-col-list" class="chip-list"></div>
+          <div class="picker-new"><input id="add-col-new" class="input-compact" placeholder="新增" /><button id="btn-add-col" class="btn small">新增</button></div>
+        </div>
+      </div>
+      <div class="actions"><button id="btn-save" class="btn primary">加入收藏</button><button id="btn-reset" class="btn">清空</button></div>
+    </div>
+  </section>
+
+  <section id="page-search" class="page">
+    <div class="card">
+      <h2 class="card-title">搜尋 <span id="search-count" class="meta-text"></span></h2>
+      <div class="filters">
+        <div class="filter-row">
+          <label>關鍵字</label>
+          <div style="display:flex;gap:8px;align-items:center"><input id="search-q" placeholder="搜尋名稱或網址" style="flex:1" /></div>
+        </div>
+        <div class="filter-row"><label>標籤</label><input id="search-tag-search" class="input-compact" placeholder="搜尋標籤" /><div id="search-tag-list" class="chip-list"></div></div>
+        <div class="filter-row"><label>合輯</label><input id="search-col-search" class="input-compact" placeholder="搜尋合輯" /><div id="search-col-list" class="chip-list"></div></div>
+      </div>
+      <div id="search-list" class="item-list"></div>
+      <div class="pagi">
+        <div class="pagi-left"><button id="search-prev" class="btn">上一頁</button><button id="search-next" class="btn">下一頁</button></div>
+        <div class="pagi-center"><span id="search-pages" class="pagi-pages"></span></div>
+        <div class="pagi-right">每頁 <select id="search-size" class="input-compact"><option>10</option><option selected>20</option><option>50</option><option>100</option></select> 筆；到第 <input id="search-jump" class="input-compact num" type="number" min="1" /> 頁 <button id="search-jump-go" class="btn small">前往</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-manage" class="page">
+    <div class="card">
+      <h2 class="card-title">管理標籤／合輯</h2>
+      <div class="manage-header"><label>排序</label><select id="manage-sort" class="sort-select"><option value="name">名稱 A→Z</option><option value="created_desc">建立 新→舊</option><option value="created_asc">建立 舊→新</option><option value="usage_desc">使用次數 高→低</option></select></div>
+      <div class="manage-flex">
+        <div class="manage-col">
+          <div class="picker-head"><div class="picker-title">標籤</div><input id="m-tag-search" class="input-compact" placeholder="搜尋標籤" /></div>
+          <div id="m-tag-list" class="manage-list"></div>
+          <div class="picker-new"><input id="m-tag-new" class="input-compact" placeholder="新增" /><button id="m-tag-add" class="btn small">新增</button></div>
+        </div>
+        <div class="manage-col">
+          <div class="picker-head"><div class="picker-title">合輯</div><input id="m-col-search" class="input-compact" placeholder="搜尋合輯" /></div>
+          <div id="m-col-list" class="manage-list"></div>
+          <div class="picker-new"><input id="m-col-new" class="input-compact" placeholder="新增" /><button id="m-col-add" class="btn small">新增</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-history" class="page">
+    <div class="card">
+      <h2 class="card-title">記錄</h2>
+      <div class="actions"><button id="history-clear" class="btn danger">清空記錄</button></div>
+      <div id="history-list" class="item-list"></div>
+    </div>
+  </section>
+</main>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-body">
+    <button id="modal-close" class="btn icon" aria-label="關閉">✕</button>
+    <div class="modal-head"><h3 id="modal-title">編輯</h3></div>
+    <div id="modal-content"></div>
+  </div>
+  <div class="modal-backdrop"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+<script src="js/ui-add.js"></script>
+<script src="js/ui-favorites.js"></script>
+<script src="js/ui-search.js"></script>
+<script src="js/ui-manage.js"></script>
+<script src="js/ui-history.js"></script>
+</body>
+</html>
